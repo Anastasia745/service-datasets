@@ -1,0 +1,56 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row" style="height:60px">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <div class="row" style="text-align:center; font-size:25px; padding-bottom: 10px">
+                    <label>Регистрация</label>
+                </div>
+                <div class="row">
+                    <form method="post" class="register-form">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" style="background: #9370DB; border-color: #9370DB">Зарегистрироваться</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+        </div>
+    </div>
+
+    <style>
+        .register-form input[type="text"], .register-form input[type="email"], .register-form input[type="password"]
+        {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .register-form button[type="submit"]
+        {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+
+{% endblock %}

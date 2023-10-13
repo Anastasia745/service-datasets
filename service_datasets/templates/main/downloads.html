@@ -1,0 +1,158 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Загрузки{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="row" style="padding:10px;">Фильтры</div>
+                <form method="post" action="{% url 'downloaded-file' id=curr_file.id %}" id="filter-checkboxes" class="filter-checkboxes">
+                    {% csrf_token %}
+                    <div class="row" style="padding:10px; height:200px; overflow: auto; border: 1px solid #ccc; border-radius: 8px;">
+                        <ul style="list-style-type: none;">
+                            {% for column in filter_columns %}
+                                <li>
+                                    <input type = "checkbox" class="filter-checkbox" value="{{ column }}">{{ column }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="row" style="padding:5px;">
+                        <input class="btn btn-primary" style="width:100%; background: black; border-color: black" type="submit" id="filter-submit" value="Сбросить фильтры">
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4" style="margin-left: 50px">
+                <div class="row" style="padding:10px;">Сортировать</div>
+                <div id="sorting-checkboxes" class="sorting-checkboxes">
+                    <div class="row" id="sorting-checkboxes-list" style="padding:5px; height:200px; overflow: auto; border: 1px solid #ccc; border-radius: 8px; width: 90%">
+                        <ul style="list-style-type: none;">
+                            {% for column in sorting_columns %}
+                                <li>
+                                    <input type="checkbox" class="sorting-checkbox" value="{{ column }}">{{ column }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="row" style="padding:5px;">
+                        <div class="col-md-6">
+                            <input type="radio" name="order-radio" class="order-radio" value="1" checked/>По возрастанию
+                        </div>
+                        <div class="col-md-6">
+                            <input type="radio" name="order-radio" class="order-radio" value="2"/>По убыванию
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form method="post" action="{% url 'delete-file' id=curr_file.id %}" class="col-md-4" style="text-align: right; padding-top: 40px">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" style="width:50%; background: #DC143C; border-color: #DC143C">Удалить файл</button>
+            </form>
+        </div>
+        <div class="row" style="font-size:25px; text-align: center; padding: 30px">
+            <label>Содержимое файла {{curr_file.name}}</label>
+        </div>
+        <div class="row" id="div-table" style="overflow: auto; border: 1px solid #ccc; width: 100%">
+            {{ table|safe }}
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            //$("#filter-submit").click(function() {
+            $("#filter-checkboxes").change(function() {
+                var selectedCheckboxes = [];
+                $('.filter-checkbox').each(function() {
+                    if($(this).is(":checked"))
+                    {
+                        selectedCheckboxes.push($(this).val());
+                    }
+                });
+                selectedCheckboxes = selectedCheckboxes.toString();
+
+                $.ajax({
+                    method: "POST",
+                    url: '/downloads/' + {{curr_file.id}} + '/filter',
+                    data: { checked: selectedCheckboxes },
+                    //contentType: "application/json",
+                    success: function(response) {
+                        $("#div-table").html(response.table);
+
+                        var checkboxSortingList = '';
+                        for (var i = 0; i < response.sorting_columns.length; i++) {
+                            var column = response.sorting_columns[i];
+                            checkboxSortingList += '<li><input type="checkbox" class="sorting-checkbox" value="' + column + '"> ' + column + '</li>';
+                        }
+                        checkboxSortingList = '<ul style="list-style-type: none;"> ' + checkboxSortingList + ' </ul>'
+                        $('#sorting-checkboxes-list').html(checkboxSortingList);
+                    },
+                    error: function(error) {
+                        $("#div-table").html("Error");
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function() {
+            $("#sorting-checkboxes").change(function() {
+
+                var selectedSortingCheckboxes = [];
+                $('.sorting-checkbox').each(function() {
+                    if($(this).is(":checked")) {
+                        selectedSortingCheckboxes.push($(this).val());
+                    }
+                });
+
+                if(selectedSortingCheckboxes.length != 0) {
+                    var selectedFilterCheckboxes = [];
+                    $('.filter-checkbox').each(function() {
+                        if($(this).is(":checked")) {
+                            selectedFilterCheckboxes.push($(this).val());
+                        }
+                    });
+
+                    selectedSortingCheckboxes = selectedSortingCheckboxes.toString();
+                    selectedFilterCheckboxes = selectedFilterCheckboxes.toString();
+                    var order = $(".order-radio:checked").val();
+
+                    $.ajax({
+                        method: "POST",
+                        url: '/downloads/' + {{curr_file.id}} + '/sorting',
+                        data: {
+                            sorting_checked: selectedSortingCheckboxes,
+                            filter_checked: selectedFilterCheckboxes,
+                            order: order
+                        },
+                        success: function(response) {
+                            $("#div-table").html(response.table);
+                        },
+                        error: function(error) {
+                            $("#div-table").html("Error");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <style>
+        #sorting-checkboxes div::-webkit-scrollbar, #filter-checkboxes div::-webkit-scrollbar {
+            width: 0;
+        }
+        table, th, td {
+            font-size:10pt;
+            border:1px solid black;
+            border-collapse:collapse;
+            text-align:left;
+        }
+        th, td {
+            padding: 5px;
+        }
+        th {
+            background: #E6E6FA;
+        }
+    </style>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Датасеты и файлы{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row" style="height:50px;">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class="row" style="text-align:left; font-size:25px; padding-bottom: 10px">
+                    <label>Скачать файлы</label>
+                </div>
+                <div class="row" style="height:350px; overflow: auto; border: 1px solid #ccc; border-radius: 8px; padding:10px">
+                    {% for dataset in datasets %}
+                        <form action="/download-dataset" method="post" class="row" style="padding:10px">
+                            {% csrf_token %}
+                            {{ form.path }}
+                            <div class="col-md-10" style="background: #E6E6FA;">
+                                <label style="vertical-align: middle;">{{dataset.title}} (Владелец: {{dataset.ownerName}})</label>
+                                <input type="hidden" name="dataset-path" value="{{dataset.ref}}"/>
+                            </div>
+                            <div class="col-md-2" style="text-align: right;">
+                                <button type="submit" class="btn btn-primary" style="width:100%; background: #9370DB; border-color: #9370DB">Скачать</button>
+                            </div>
+                        </form>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row" style="padding-bottom: 30px">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class="row" style="text-align:left; font-size:25px; padding-bottom: 10px; padding-top: 30px">
+                    <label>Загруженные файлы</label>
+                </div>
+                <div class="row" style="height:350px; overflow: auto; border: 1px solid #ccc; border-radius: 8px; padding:10px; vertical-align: top;">
+                    {% for file in downloaded_files %}
+                        <form method="post" class="row" style="padding:10px; height: 20px" action="{% url 'delete-file' id=file.id %}">
+                            {% csrf_token %}
+                            <div class="col-md-10" style="background: #E6E6FA;">
+                                <a href="{% url 'downloaded-file' id=file.id %}" style="vertical-align: middle; text-decoration: none; color: black;">{{file.name}} </a>
+                            </div>
+                            <div class="col-md-2" style="text-align: right;">
+                                <button type="submit" class="btn btn-primary" style="width:100%; background: #DC143C; border-color: #DC143C">Удалить</button>
+                            </div>
+                        </form>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+
+{% endblock %}

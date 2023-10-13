@@ -1,0 +1,55 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Авторизация{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row" style="height:120px">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <div class="row" style="text-align:center; font-size:25px; padding-bottom: 10px">
+                    <label>Авторизация</label>
+                </div>
+                <div class="row">
+                    <form method="post" class="auth-form">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" style="background: #9370DB; border-color: #9370DB">Войти</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
+        </div>
+    </div>
+
+    <style>
+        .auth-form input[type="text"], .auth-form input[type="password"]
+        {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .auth-form button[type="submit"]
+        {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+{% endblock %}
