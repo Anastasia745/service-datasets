@@ -4,7 +4,7 @@ certifi==2023.7.22
 charset-normalizer==3.3.0
 colorama==0.4.6
 Django==4.2.6
-environ==1.0
+django-environ==0.11.2
 idna==3.4
 kaggle==1.5.16
 numpy==1.26.0
